@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0c10">
+  <meta name="description" content="Explore Mokio apps, tools, and experiences—all in one place.">
+  <title>Resources — Mokio</title>
+  <link rel="icon" href="https://www.mokio.online/images/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="https://www.mokio.online/" aria-label="Mokio home">
+        <img src="https://www.mokio.online/images/logo.svg" alt="">
+        <span>Mokio</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+      </a>
+      <nav class="header-links" aria-label="Main navigation">
+        <a href="#discover">Discover</a>
+        <a href="#web-features">Web Features</a>
+        <a href="https://app.mokio.online/">Apps</a>
+        <a class="header-cta" href="https://app.mokio.online/">Browse apps <span aria-hidden="true">↗</span></a>
+      </nav>
+      <button class="mobile-menu-btn" type="button" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
+      <div class="hero-content">
+        <p class="eyebrow"><span class="eyebrow-dot"></span> YOUR MOKIO STARTING POINT</p>
+        <h1>Everything you need.<br><span>All in one place.</span></h1>
+        <p class="hero-copy">Explore the apps and experiences Mokio is building. Find your next favorite and see what's on the way.</p>
+        <a class="hero-link" href="#discover">Explore resources <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-glow"></div>
+        <div class="art-ring art-ring-one"></div>
+        <div class="art-ring art-ring-two"></div>
+        <div class="art-center"><img src="https://www.mokio.online/images/logo.svg" alt=""></div>
+        <span class="art-chip chip-one">PLAY</span>
+        <span class="art-chip chip-two">CREATE</span>
+        <span class="art-chip chip-three">CONNECT</span>
+      </div>
+      <div class="hero-bottom">
+        <span>Built for curious minds</span>
+        <span class="hero-bottom-line" aria-hidden="true"></span>
+        <span>Made by Mokio</span>
+      </div>
+    </section>
+
+    <section class="discover section-wrap" id="discover">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">THE MOKIO COLLECTION</p>
+          <h2>Find your next thing.</h2>
+          <p class="section-copy">A growing collection of Mokio apps and experiences.</p>
+        </div>
+        <a class="text-link" href="https://app.mokio.online/">View all apps <span aria-hidden="true">↗</span></a>
+      </div>
+
+      <div class="catalog-controls">
+        <label class="search-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+          <input id="resourceSearch" type="search" placeholder="Search apps..." autocomplete="off">
+          <kbd>/</kbd>
+        </label>
+        <div class="filters" role="group" aria-label="Filter apps">
+          <button class="filter-chip is-active" type="button" data-filter="all" aria-pressed="true">Everything</button>
+          <button class="filter-chip" type="button" data-filter="platform" aria-pressed="false">Platform</button>
+          <button class="filter-chip" type="button" data-filter="games" aria-pressed="false">Games</button>
+        </div>
+      </div>
+
+      <div class="resource-grid" id="resourceGrid">
+        <a class="resource-card card-featured" href="https://app.mokio.online/" data-category="platform" data-search="mokio panel apps platform discover manage">
+          <div class="card-topline"><span class="card-category">PLATFORM</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+          <div class="resource-icon"><img src="https://app.mokio.online/images/logo.svg" alt=""></div>
+          <div class="resource-info">
+            <h3>Mokio Panel</h3>
+            <p>Your home for discovering and managing Mokio apps.</p>
+          </div>
+          <span class="card-action">Explore the platform <span aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="resource-card" href="https://app.mokio.online/apps/arc.html" data-category="messaging" data-search="mokio arc messaging chat connect">
+          <div class="card-topline"><span class="card-category">MESSAGING</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+          <div class="resource-icon"><img src="https://app.mokio.online/images/arc-logo.svg" alt=""></div>
+          <div class="resource-info">
+            <h3>Mokio Arc</h3>
+            <p>A fresh take on messaging, made to bring people together.</p>
+          </div>
+          <span class="card-action">Discover Arc <span aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="resource-card" href="https://app.mokio.online/apps/wave.html" data-category="music" data-search="mokio wave music create listen share">
+          <div class="card-topline"><span class="card-category">MUSIC</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+          <div class="resource-icon"><img src="https://app.mokio.online/images/wave-logo.svg" alt=""></div>
+          <div class="resource-info">
+            <h3>Mokio Wave</h3>
+            <p>A space to discover, create, and share music.</p>
+          </div>
+          <span class="card-action">Discover Wave <span aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="resource-card" href="https://app.mokio.online/apps/blitz.html" data-category="games" data-search="blitz minecraft launcher mods instances play">
+          <div class="card-topline"><span class="card-category">GAMES</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+          <div class="resource-icon"><img src="https://app.mokio.online/images/blitz-logo.png" alt=""></div>
+          <div class="resource-info">
+            <h3>Blitz</h3>
+            <p>A streamlined Minecraft launcher for your worlds and mods.</p>
+          </div>
+          <span class="card-action">Discover Blitz <span aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="resource-card" href="https://app.mokio.online/apps/crossfire.html" data-category="games" data-search="crossfire games launcher steam xbox play">
+          <div class="card-topline"><span class="card-category">GAMES</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+          <div class="resource-icon"><img src="https://app.mokio.online/images/crossfire-logo.png" alt=""></div>
+          <div class="resource-info">
+            <h3>Crossfire</h3>
+            <p>Bring your games together in one simple launcher.</p>
+          </div>
+          <span class="card-action">Discover Crossfire <span aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="resource-card card-about" href="https://www.mokio.online/" data-category="platform" data-search="mokio about vision company home">
+          <div class="card-topline"><span class="card-category">ABOUT MOKIO</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+          <div class="about-mark" aria-hidden="true">M<span>.</span></div>
+          <div class="resource-info">
+            <h3>Meet Mokio</h3>
+            <p>Get to know the connected world we're building.</p>
+          </div>
+          <span class="card-action">Visit mokio.online <span aria-hidden="true">→</span></span>
+        </a>
+      </div>
+      <p class="empty-state" id="emptyState" hidden>No apps match that search. Try another name or category.</p>
+      <p class="results-count" id="resultsCount" aria-live="polite"></p>
+    </section>
+
+    <!-- Mokio Features -->
+
+    <section class="web-features section-wrap" id="web-features">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">TOOLS MADE BY MOKIO</p>
+          <h2>Web Features</h2>
+          <p class="section-copy">Handy little tools you can use right from your browser.</p>
+        </div>
+        <p class="feature-editor-note">Add each feature's page, then link it from a card here.</p>
+      </div>
+
+      <div class="feature-search-wrap">
+        <label class="feature-search-label" for="featureSearch">Search tools made by Mokio</label>
+        <label class="search-box feature-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+          <input id="featureSearch" type="search" placeholder="Search tools..." autocomplete="off" aria-label="Search tools made by Mokio">
+        </label>
+      </div>
+
+      <!-- Published feature cards should be links with target="_blank" and rel="noopener". -->
+      <div class="web-feature-grid">
+        <a class="web-feature-card" href="./resources/features/image-converter.html" target="_blank" rel="noopener" aria-label="Open Image Converter">
+          <div class="feature-card-topline">
+            <span class="feature-type">IMAGE TOOL</span>
+            <span class="feature-status">AVAILABLE</span>
+          </div>
+          <div class="feature-icon feature-icon-image" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect x="7" y="10" width="31" height="27" rx="5"></rect>
+              <circle cx="17" cy="19" r="3"></circle>
+              <path d="m10 33 9-8 6 5 5-5 6 7"></path>
+              <path d="m38 7 1.4 3.6L43 12l-3.6 1.4L38 17l-1.4-3.6L33 12l3.6-1.4L38 7Z"></path>
+            </svg>
+          </div>
+          <h3>Image Converter</h3>
+          <p>Convert images between PNG, JPG, WebP, SVG, and more—all in your browser.</p>
+          <span class="feature-card-action">Open Image Converter <span aria-hidden="true">↗</span></span>
+        </a>
+
+        <a class="web-feature-card" href="./resources/features/document-converter.html" target="_blank" rel="noopener" aria-label="Open Document Converter">
+          <div class="feature-card-topline">
+            <span class="feature-type">FILE TOOL</span>
+            <span class="feature-status">AVAILABLE</span>
+          </div>
+          <div class="feature-icon feature-icon-file" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+              <path d="M13 7h14l9 9v22a3 3 0 0 1-3 3H13a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3Z"></path>
+              <path d="M27 8v9h9M16 25h14M16 31h9"></path>
+              <path d="m28 25 3 3-3 3"></path>
+            </svg>
+          </div>
+          <h3>Document Converter</h3>
+          <p>Convert documents between formats with a straightforward tool that runs on the web.</p>
+          <span class="feature-card-action">Open Document Converter <span aria-hidden="true">↗</span></span>
+        </a>
+
+        <a class="web-feature-card" href="./resources/features/background-remover.html" target="_blank" rel="noopener" aria-label="Open Background Removal">
+          <div class="feature-card-topline">
+            <span class="feature-type">IMAGE TOOL</span>
+            <span class="feature-status">AVAILABLE</span>
+          </div>
+          <div class="feature-icon feature-icon-file" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect x="7" y="10" width="31" height="27" rx="5"></rect>
+              <circle cx="17" cy="19" r="3"></circle>
+              <path d="m10 33 9-8 6 5 5-5 6 7"></path>
+              <path d="m38 7 1.4 3.6L43 12l-3.6 1.4L38 17l-1.4-3.6L33 12l3.6-1.4L38 7Z"></path>
+            </svg>
+          </div>
+          <h3>Background Remover</h3>
+          <p>Remove backgrounds from images with ai or manually.</p>
+          <span class="feature-card-action">Open Background Removal <span aria-hidden="true">↗</span></span>
+        </a>
+
+      </div>
+      <p class="empty-state" id="featureEmptyState" hidden>No web features match that search. Try another name.</p>
+      <p class="results-count" id="featureResultsCount" aria-live="polite"></p>
+    </section>
+
+    <section class="bottom-cta section-wrap">
+      <div class="cta-mark" aria-hidden="true">✳</div>
+      <div>
+        <p class="eyebrow">THERE'S MORE TO EXPLORE</p>
+        <h2>Find your place in Mokio.</h2>
+        <p>Browse the full collection and see what's next.</p>
+      </div>
+      <a class="cta-button" href="https://app.mokio.online/">Explore Mokio Panel <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="footer-brand" href="https://www.mokio.online/">
+      <img src="https://www.mokio.online/images/logo.svg" alt="">
+      <span>Mokio</span>
+    </a>
+    <p>One connected world, built one experience at a time.</p>
+    <span class="copyright">© 2026 Mokio. All rights reserved.</span>
+  </footer>
+</body>
+</html>

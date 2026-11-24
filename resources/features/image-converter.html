@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universal Image Converter</title>
+  <style>
+    :root {
+      --bg: #0f1117; --card: #1a1d27; --border: #2a2f3d; --text: #e8eaed;
+      --muted: #9aa0a6; --accent: #8ab4f8; --accent-hover: #aecbfa;
+      --success: #81c995; --danger: #f28b82; --vector: #c58af9; --warn: #fdd663;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 2rem 1rem; line-height: 1.5;
+    }
+    h1 { font-size: 1.75rem; font-weight: 600; margin-bottom: 0.35rem; letter-spacing: -0.02em; }
+    .subtitle { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.95rem; text-align: center; max-width: 680px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 1.5rem; width: 100%; max-width: 1000px; box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    }
+    .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+    @media (max-width: 740px) { .main-layout { grid-template-columns: 1fr; } }
+    .panel { display: flex; flex-direction: column; gap: 0.75rem; }
+    .panel-title {
+      font-size: 0.8rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.06em; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .badge {
+      font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 999px;
+      font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .badge-raster { background: rgba(138,180,248,0.15); color: var(--accent); }
+    .badge-vector { background: rgba(197,138,249,0.18); color: var(--vector); }
+    .badge-adv { background: rgba(253,214,99,0.18); color: var(--warn); }
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem;
+      text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+      min-height: 280px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.15); overflow: hidden;
+    }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(138,180,248,0.06); }
+    .drop-zone.has-file { border-style: solid; border-color: var(--success); padding: 0.75rem; }
+    .drop-icon { font-size: 2.25rem; margin-bottom: 0.6rem; opacity: 0.7; }
+    .drop-text { font-size: 0.95rem; margin-bottom: 0.3rem; }
+    .drop-hint { font-size: 0.8rem; color: var(--muted); max-width: 340px; }
+    .original-preview { max-width: 100%; max-height: 320px; border-radius: 8px; display: none; }
+    .html-preview { width: 100%; height: 280px; border: none; border-radius: 8px; background: #fff; display: none; }
+    .drop-zone.has-file .drop-icon, .drop-zone.has-file .drop-text, .drop-zone.has-file .drop-hint { display: none; }
+    .drop-zone.has-file .original-preview, .drop-zone.has-file .html-preview.visible { display: block; }
+    input[type="file"] { display: none; }
+    .result-box {
+      border: 1px solid var(--border); border-radius: 12px; background: #000;
+      min-height: 280px; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; padding: 0.75rem;
+    }
+    .result-box.empty { background: rgba(0,0,0,0.15); border-style: dashed; }
+    .result-box img { max-width: 100%; max-height: 320px; display: block; }
+    .placeholder-text { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 1rem; }
+    .download-area { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.25rem; }
+    .download-area button { width: 100%; }
+    .info-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+    .info-item strong { color: var(--text); font-weight: 500; }
+    .options {
+      margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 1.1rem; align-items: center;
+    }
+    .option-row { display: flex; align-items: center; gap: 0.55rem; }
+    label { font-size: 0.9rem; cursor: pointer; user-select: none; }
+    input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); cursor: pointer; }
+    select {
+      appearance: none; background: var(--bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.55rem 2rem 0.55rem 0.9rem; font-size: 0.95rem; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%9aa0a6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.75rem center; min-width: 180px;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    optgroup { color: var(--muted); font-weight: 600; font-size: 0.8rem; }
+    option { color: var(--text); font-weight: 400; }
+    button {
+      appearance: none; border: none; border-radius: 10px; padding: 0.7rem 1.25rem;
+      font-size: 0.95rem; font-weight: 500; cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    }
+    button:active { transform: scale(0.97); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--accent); color: #0f1117; }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid rgba(242,139,130,0.35); }
+    .btn-danger:hover { background: rgba(242,139,130,0.1); }
+    .btn-adv { background: transparent; color: var(--warn); border: 1px solid rgba(253,214,99,0.4); }
+    .btn-adv:hover:not(:disabled) { background: rgba(253,214,99,0.1); }
+    .btn-adv.active { background: rgba(253,214,99,0.18); border-color: var(--warn); }
+    .status { margin-top: 1rem; font-size: 0.9rem; min-height: 1.4em; text-align: center; }
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
+    .status.warn { color: var(--warn); }
+    footer { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); text-align: center; max-width: 680px; }
+    .format-select-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .format-select-row label { font-weight: 500; color: var(--text); }
+    .quality-row { display: none; align-items: center; gap: 0.55rem; }
+    .quality-row.visible { display: flex; }
+    input[type="range"] { width: 100px; accent-color: var(--accent); }
+    .quality-value { font-size: 0.85rem; color: var(--muted); min-width: 2.5rem; }
+    .limits-box {
+      margin-top: 1.25rem; padding: 1rem 1.1rem; background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border); border-radius: 12px; font-size: 0.82rem;
+      color: var(--muted); line-height: 1.55;
+    }
+    .limits-box strong { color: var(--text); }
+    .limits-box ul { margin: 0.4rem 0 0 1.1rem; }
+    .limits-box li { margin: 0.15rem 0; }
+    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 0.5rem; overflow: hidden; display: none; }
+    .progress-bar.visible { display: block; }
+    .progress-bar > div { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+  <h1>Universal Image Converter</h1>
+  <p class="subtitle">
+    Fast native conversion for common formats + optional ImageMagick engine for far more input/output types.<br>
+    Everything runs in your browser — no upload.
+  </p>
+
+  <div class="card">
+    <div class="main-layout">
+      <div class="panel">
+        <div class="panel-title">Original <span class="badge" id="sourceBadge" style="display:none;"></span></div>
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-icon">🖼️</div>
+          <div class="drop-text">Drop image / SVG / HTML</div>
+          <div class="drop-hint">
+            Native: PNG JPG WebP GIF BMP SVG ICO AVIF HEIC*<br>
+            + Advanced: TIFF TGA JP2 PCX PSD* PDF (1st page) PAM and more
+          </div>
+          <img class="original-preview" id="originalPreview" alt="Original" />
+          <iframe class="html-preview" id="htmlPreview" sandbox="allow-same-origin"></iframe>
+          <input type="file" id="fileInput" accept="*/*" />
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Converted <span class="badge" id="targetBadge" style="display:none;"></span></div>
+        <div class="result-box empty" id="resultBox">
+          <div class="placeholder-text">Preview will appear here</div>
+        </div>
+        <div class="download-area">
+          <button class="btn-primary" id="downloadBtn" disabled>⬇ Download</button>
+          <button class="btn-secondary" id="copyBtn" disabled>Copy code / data URL</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-row" id="infoRow"></div>
+
+    <div class="options">
+      <div class="format-select-row">
+        <label for="outputFormat">Convert to:</label>
+        <select id="outputFormat">
+          <optgroup label="Common (native)">
+            <option value="png">PNG</option>
+            <option value="jpeg">JPG / JPEG</option>
+            <option value="webp">WebP</option>
+            <option value="svg">SVG</option>
+          </optgroup>
+          <optgroup label="Extra (needs Advanced engine)" id="advGroup" disabled>
+            <option value="tiff">TIFF</option>
+            <option value="bmp">BMP</option>
+            <option value="gif">GIF</option>
+            <option value="tga">TGA</option>
+            <option value="ico">ICO</option>
+            <option value="jp2">JPEG 2000 (JP2)</option>
+            <option value="pcx">PCX</option>
+            <option value="psd">PSD (flattened)</option>
+            <option value="pam">PAM</option>
+            <option value="ppm">PPM</option>
+            <option value="pgm">PGM</option>
+            <option value="pbm">PBM</option>
+            <option value="xpm">XPM</option>
+            <option value="xbm">XBM</option>
+            <option value="wbmp">WBMP</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="quality-row" id="qualityRow">
+        <label for="quality">Quality</label>
+        <input type="range" id="quality" min="0.1" max="1" step="0.05" value="0.92" />
+        <span class="quality-value" id="qualityValue">92%</span>
+      </div>
+      <div class="option-row">
+        <input type="checkbox" id="optPreserveName" checked />
+        <label for="optPreserveName">Keep original filename</label>
+      </div>
+      <div class="option-row">
+        <input type="checkbox" id="optAddBackground" />
+        <label for="optAddBackground">Add white background</label>
+      </div>
+      <button class="btn-adv" id="advBtn">Enable Advanced Engine (~15 MB)</button>
+      <button class="btn-danger" id="clearBtn" style="margin-left: auto;">Clear</button>
+    </div>
+
+    <div class="progress-bar" id="progressBar"><div id="progressFill"></div></div>
+    <div class="status" id="status"></div>
+
+    <div class="limits-box">
+      <strong>How this works</strong>
+      <ul>
+        <li><strong>Default (fast):</strong> Pure browser APIs (FileReader, Image, Canvas). Works when you open this file directly or host it. Supports PNG, JPG, WebP, GIF, BMP, SVG, ICO and formats your browser can decode.</li>
+        <li><strong>Advanced Engine:</strong> Loads ImageMagick WASM (~15 MB) + optional PDF.js. Unlocks TIFF, TGA, JPEG 2000, PCX, flattened PSD, PAM/PPM, XPM, WBMP, and more. PDF files render page 1. Works on GitHub Pages / any https host.</li>
+        <li>Nothing is uploaded.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 Mokio. All rights reserved.
+  </footer>
+
+  <!-- Plain script: no type="module" so basic conversion always runs, including from file:// -->
+  <script>
+    (function () {
+      "use strict";
+
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const originalPreview = document.getElementById("originalPreview");
+      const htmlPreview = document.getElementById("htmlPreview");
+      const resultBox = document.getElementById("resultBox");
+      const infoRow = document.getElementById("infoRow");
+      const statusEl = document.getElementById("status");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const copyBtn = document.getElementById("copyBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const advBtn = document.getElementById("advBtn");
+      const optPreserveName = document.getElementById("optPreserveName");
+      const optAddBackground = document.getElementById("optAddBackground");
+      const outputFormat = document.getElementById("outputFormat");
+      const qualityRow = document.getElementById("qualityRow");
+      const qualitySlider = document.getElementById("quality");
+      const qualityValue = document.getElementById("qualityValue");
+      const sourceBadge = document.getElementById("sourceBadge");
+      const targetBadge = document.getElementById("targetBadge");
+      const advGroup = document.getElementById("advGroup");
+      const progressBar = document.getElementById("progressBar");
+      const progressFill = document.getElementById("progressFill");
+
+      let currentFile = null;
+      let currentResult = null;
+      let currentMime = "image/png";
+      let currentExt = "png";
+      let currentFileName = "converted.png";
+      let isHtml = false;
+      let sourceIsSvg = false;
+      let lastDataUrl = null;
+      let lastWidth = 0;
+      let lastHeight = 0;
+      let lastHtmlContent = null;
+      let lastSvgText = null;
+      let lastFileBytes = null;
+
+      let magickReady = false;
+      let magickLoading = false;
+
+      var pdfjsLibRef = null;
+      function loadPdfJs() {
+        if (pdfjsLibRef) return Promise.resolve(pdfjsLibRef);
+        return import("https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.mjs").then(function (mod) {
+          mod.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
+          pdfjsLibRef = mod;
+          return mod;
+        });
+      }
+
+      let ImageMagick = null;
+      let MagickFormat = null;
+
+      const nativeMime = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp", svg: "image/svg+xml" };
+      const nativeExt = { png: "png", jpeg: "jpg", webp: "webp", svg: "svg" };
+      const magickFormatMap = {
+        png: "Png", jpeg: "Jpeg", webp: "WebP", tiff: "Tiff", bmp: "Bmp", gif: "Gif",
+        tga: "Tga", ico: "Ico", jp2: "Jp2", pcx: "Pcx", psd: "Psd",
+        pam: "Pam", ppm: "Ppm", pgm: "Pgm", pbm: "Pbm", xpm: "Xpm", xbm: "Xbm", wbmp: "Wbmp"
+      };
+      const magickExt = {
+        png: "png", jpeg: "jpg", webp: "webp", tiff: "tiff", bmp: "bmp", gif: "gif",
+        tga: "tga", ico: "ico", jp2: "jp2", pcx: "pcx", psd: "psd",
+        pam: "pam", ppm: "ppm", pgm: "pgm", pbm: "pbm", xpm: "xpm", xbm: "xbm", wbmp: "wbmp"
+      };
+      const magickMime = {
+        png: "image/png", jpeg: "image/jpeg", webp: "image/webp", tiff: "image/tiff",
+        bmp: "image/bmp", gif: "image/gif", tga: "image/x-tga", ico: "image/x-icon",
+        jp2: "image/jp2", pcx: "image/x-pcx", psd: "image/vnd.adobe.photoshop",
+        pam: "image/x-portable-arbitrarymap", ppm: "image/x-portable-pixmap",
+        pgm: "image/x-portable-graymap", pbm: "image/x-portable-bitmap",
+        xpm: "image/x-xpixmap", xbm: "image/x-xbitmap", wbmp: "image/vnd.wap.wbmp"
+      };
+      const ADV_FORMATS = ["tiff","bmp","gif","tga","ico","jp2","pcx","psd","pam","ppm","pgm","pbm","xpm","xbm","wbmp"];
+
+      function setStatus(msg, type) {
+        statusEl.textContent = msg || "";
+        statusEl.className = "status" + (type ? " " + type : "");
+      }
+
+      function formatBytes(b) {
+        if (b < 1024) return b + " B";
+        if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
+        return (b / (1024 * 1024)).toFixed(2) + " MB";
+      }
+
+      function updateQualityVisibility() {
+        var fmt = outputFormat.value;
+        qualityRow.classList.toggle("visible", fmt === "jpeg" || fmt === "webp");
+      }
+
+      function updateBadges() {
+        if (isHtml) {
+          sourceBadge.style.display = "inline";
+          sourceBadge.textContent = "HTML";
+          sourceBadge.className = "badge badge-vector";
+        } else if (sourceIsSvg) {
+          sourceBadge.style.display = "inline";
+          sourceBadge.textContent = "Vector";
+          sourceBadge.className = "badge badge-vector";
+        } else if (currentFile) {
+          sourceBadge.style.display = "inline";
+          sourceBadge.textContent = magickReady ? "Advanced" : "Raster";
+          sourceBadge.className = magickReady ? "badge badge-adv" : "badge badge-raster";
+        } else {
+          sourceBadge.style.display = "none";
+        }
+
+        var fmt = outputFormat.value;
+        targetBadge.style.display = "inline";
+        if (fmt === "svg") {
+          targetBadge.textContent = "Vector";
+          targetBadge.className = "badge badge-vector";
+        } else if (ADV_FORMATS.indexOf(fmt) !== -1) {
+          targetBadge.textContent = "Advanced";
+          targetBadge.className = "badge badge-adv";
+        } else {
+          targetBadge.textContent = "Raster";
+          targetBadge.className = "badge badge-raster";
+        }
+      }
+
+      function updateFilename(file) {
+        if (optPreserveName.checked && file) {
+          currentFileName = file.name.replace(/\.[^.]+$/, "") + "." + currentExt;
+        } else {
+          currentFileName = "converted." + currentExt;
+        }
+      }
+
+      function parseSvgDimensions(svgText) {
+        var width = 800, height = 600;
+        var wMatch = svgText.match(/\bwidth\s*=\s*["']?([\d.]+)/i);
+        var hMatch = svgText.match(/\bheight\s*=\s*["']?([\d.]+)/i);
+        var vbMatch = svgText.match(/viewBox\s*=\s*["']?\s*([\d.-]+)\s+([\d.-]+)\s+([\d.]+)\s+([\d.]+)/i);
+        if (wMatch) width = parseFloat(wMatch[1]);
+        if (hMatch) height = parseFloat(hMatch[1]);
+        if (vbMatch) {
+          if (!wMatch) width = parseFloat(vbMatch[3]);
+          if (!hMatch) height = parseFloat(vbMatch[4]);
+        }
+        if (!isFinite(width) || width <= 0) width = 800;
+        if (!isFinite(height) || height <= 0) height = 600;
+        return { width: Math.round(width), height: Math.round(height) };
+      }
+
+      function imageToSvg(w, h, dataUrl, addBg) {
+        var bg = addBg ? '<rect width="100%" height="100%" fill="#ffffff"/>' : "";
+        return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+          '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">\n' +
+          "  " + bg + '\n  <image width="' + w + '" height="' + h + '" href="' + dataUrl + '" xlink:href="' + dataUrl + '" preserveAspectRatio="none"/>\n</svg>';
+      }
+
+      function htmlToSvg(html, w, h, addBg) {
+        w = w || 900; h = h || 700;
+        var bg = addBg ? '<rect width="100%" height="100%" fill="#ffffff"/>' : "";
+        var body = html;
+        var m = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+        if (m) body = m[1];
+        var styles = "";
+        var styleRe = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+        var sm;
+        while ((sm = styleRe.exec(html)) !== null) styles += sm[1] + "\n";
+        var styleTag = styles ? "<style>" + styles + "</style>" : "";
+        return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">\n' +
+          "  " + bg + '\n  <foreignObject width="100%" height="100%">\n' +
+          '    <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;margin:0;padding:0;overflow:auto;">' +
+          styleTag + body + "</div>\n  </foreignObject>\n</svg>";
+      }
+
+      function canvasToBlob(canvas, mime, quality) {
+        return new Promise(function (resolve) {
+          if (mime === "image/png") canvas.toBlob(resolve, mime);
+          else canvas.toBlob(resolve, mime, quality);
+        });
+      }
+
+      function rasterizeNative(img, w, h, format, quality, addBg) {
+        var c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        var ctx = c.getContext("2d");
+        if (addBg || format === "jpeg") {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, w, h);
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        return canvasToBlob(c, nativeMime[format], quality);
+      }
+
+      function svgTextToImage(svgText) {
+        return new Promise(function (resolve, reject) {
+          var url = URL.createObjectURL(new Blob([svgText], { type: "image/svg+xml;charset=utf-8" }));
+          var img = new Image();
+          img.onload = function () { URL.revokeObjectURL(url); resolve(img); };
+          img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("Failed to render SVG")); };
+          img.src = url;
+        });
+      }
+
+      function showPreview(blobOrString, isSvg) {
+        resultBox.classList.remove("empty");
+        resultBox.innerHTML = "";
+        var img = document.createElement("img");
+        img.alt = "Converted";
+        if (isSvg) {
+          var b = typeof blobOrString === "string"
+            ? new Blob([blobOrString], { type: "image/svg+xml;charset=utf-8" })
+            : blobOrString;
+          img.src = URL.createObjectURL(b);
+        } else {
+          img.src = URL.createObjectURL(blobOrString);
+        }
+        resultBox.appendChild(img);
+      }
+
+      // ---------- Advanced engine (ImageMagick WASM) ----------
+      // Loaded only on demand via dynamic import so the rest of the page
+      // works with a plain script tag (including when opened as file://).
+      function loadMagick() {
+        if (magickReady) return Promise.resolve(true);
+        if (magickLoading) return Promise.resolve(false);
+        magickLoading = true;
+        advBtn.disabled = true;
+        setStatus("Loading ImageMagick engine (~15 MB)…", "warn");
+        progressBar.classList.add("visible");
+        progressFill.style.width = "20%";
+
+        // Dynamic import works from classic scripts in modern browsers.
+        // Requires the page to be served over http/https (not file://) because of CORS.
+        return import("https://cdn.jsdelivr.net/npm/@imagemagick/magick-wasm@0.0.46/dist/index.js")
+          .then(function (mod) {
+            progressFill.style.width = "45%";
+            ImageMagick = mod.ImageMagick;
+            MagickFormat = mod.MagickFormat;
+            var wasmUrl = "https://cdn.jsdelivr.net/npm/@imagemagick/magick-wasm@0.0.46/dist/x86/magick.wasm";
+            progressFill.style.width = "60%";
+            return mod.initializeImageMagick(wasmUrl);
+          })
+          .then(function () {
+            progressFill.style.width = "100%";
+            magickReady = true;
+            magickLoading = false;
+            advBtn.textContent = "Advanced Engine Ready";
+            advBtn.classList.add("active");
+            advGroup.disabled = false;
+            setStatus("Advanced engine ready — more formats unlocked.", "success");
+            setTimeout(function () { progressBar.classList.remove("visible"); }, 800);
+            return true;
+          })
+          .catch(function (err) {
+            console.error(err);
+            magickLoading = false;
+            advBtn.disabled = false;
+            progressBar.classList.remove("visible");
+            var msg = (err && err.message) ? err.message : String(err);
+            if (location.protocol === "file:") {
+              setStatus("Advanced engine needs http/https. Open this page via a local server (e.g. Live Server) or host it, then try again.", "error");
+            } else {
+              setStatus("Failed to load Advanced engine: " + msg, "error");
+            }
+            return false;
+          });
+      }
+
+      function convertWithMagick(bytes, outFormat, quality) {
+        return new Promise(function (resolve, reject) {
+          try {
+            ImageMagick.read(bytes, function (image) {
+              try {
+                if (outFormat === "Jpeg" || outFormat === "WebP") {
+                  image.quality = Math.round(quality * 100);
+                }
+                var fmt = MagickFormat[outFormat];
+                image.write(fmt, function (data) {
+                  resolve(new Uint8Array(data));
+                });
+              } catch (e) { reject(e); }
+            });
+          } catch (e) { reject(e); }
+        });
+      }
+
+      function doConversion() {
+        if (!currentFile && !lastDataUrl && !lastHtmlContent && !lastSvgText && !lastFileBytes) return;
+
+        var format = outputFormat.value;
+        var isAdvFormat = ADV_FORMATS.indexOf(format) !== -1;
+        var quality = parseFloat(qualitySlider.value);
+        var addBg = optAddBackground.checked;
+
+        if (isAdvFormat && !magickReady) {
+          setStatus("This output needs the Advanced engine. Click “Enable Advanced Engine”.", "warn");
+          downloadBtn.disabled = true;
+          return;
+        }
+
+        if (format === "svg") {
+          currentMime = "image/svg+xml";
+          currentExt = "svg";
+        } else if (isAdvFormat || magickReady) {
+          currentMime = magickMime[format] || nativeMime[format] || "application/octet-stream";
+          currentExt = magickExt[format] || nativeExt[format] || format;
+        } else {
+          currentMime = nativeMime[format];
+          currentExt = nativeExt[format];
+        }
+
+        updateFilename(currentFile);
+        updateBadges();
+        setStatus("Converting…");
+
+        var run = async function () {
+          try {
+            if (isHtml) {
+              if (format === "svg") {
+                currentResult = htmlToSvg(lastHtmlContent, 900, 700, addBg);
+                showPreview(currentResult, true);
+                setStatus("HTML → SVG. Ready.", "success");
+              } else {
+                var svgStr = htmlToSvg(lastHtmlContent, 900, 700, addBg);
+                var img = await svgTextToImage(svgStr);
+                if (magickReady && isAdvFormat) {
+                  var c = document.createElement("canvas");
+                  c.width = img.naturalWidth || 900;
+                  c.height = img.naturalHeight || 700;
+                  c.getContext("2d").drawImage(img, 0, 0);
+                  var pngBlob = await canvasToBlob(c, "image/png");
+                  var bytes = new Uint8Array(await pngBlob.arrayBuffer());
+                  var out = await convertWithMagick(bytes, magickFormatMap[format], quality);
+                  currentResult = new Blob([out], { type: currentMime });
+                } else {
+                  currentResult = await rasterizeNative(img, img.naturalWidth || 900, img.naturalHeight || 700, format, quality, addBg);
+                }
+                showPreview(currentResult, false);
+                setStatus("HTML → " + format.toUpperCase() + ". Ready.", "success");
+              }
+            } else if (sourceIsSvg) {
+              if (format === "svg") {
+                currentResult = lastSvgText;
+                showPreview(currentResult, true);
+                setStatus("SVG ready.", "success");
+              } else if (magickReady) {
+                var svgBytes = new TextEncoder().encode(lastSvgText);
+                var outSvg = await convertWithMagick(svgBytes, magickFormatMap[format] || "Png", quality);
+                currentResult = new Blob([outSvg], { type: currentMime });
+                showPreview(currentResult, false);
+                setStatus("SVG → " + format.toUpperCase() + ". Ready.", "success");
+              } else {
+                var img2 = await svgTextToImage(lastSvgText);
+                var w = img2.naturalWidth || lastWidth || 800;
+                var h = img2.naturalHeight || lastHeight || 600;
+                currentResult = await rasterizeNative(img2, w, h, format, quality, addBg);
+                showPreview(currentResult, false);
+                setStatus("SVG → " + format.toUpperCase() + ". Ready.", "success");
+              }
+            } else {
+              if (format === "svg") {
+                if (!lastDataUrl && lastFileBytes) {
+                  lastDataUrl = URL.createObjectURL(new Blob([lastFileBytes]));
+                }
+                var img3 = new Image();
+                await new Promise(function (res, rej) {
+                  img3.onload = res;
+                  img3.onerror = rej;
+                  img3.src = lastDataUrl;
+                });
+                currentResult = imageToSvg(img3.naturalWidth, img3.naturalHeight, lastDataUrl, addBg);
+                showPreview(currentResult, true);
+                setStatus("Image → SVG (embedded). Ready.", "success");
+              } else if (magickReady && lastFileBytes) {
+                var outFmt = magickFormatMap[format] || "Png";
+                var outBytes = await convertWithMagick(lastFileBytes, outFmt, quality);
+                currentResult = new Blob([outBytes], { type: currentMime });
+                showPreview(currentResult, false);
+                setStatus("Converted to " + format.toUpperCase() + " (Advanced). Ready.", "success");
+              } else {
+                var img4 = new Image();
+                await new Promise(function (res, rej) {
+                  img4.onload = res;
+                  img4.onerror = function () {
+                    rej(new Error("Browser cannot decode this format. Enable Advanced Engine for more formats."));
+                  };
+                  img4.src = lastDataUrl;
+                });
+                lastWidth = img4.naturalWidth;
+                lastHeight = img4.naturalHeight;
+                currentResult = await rasterizeNative(img4, img4.naturalWidth, img4.naturalHeight, format, quality, addBg);
+                showPreview(currentResult, false);
+                setStatus("Converted to " + format.toUpperCase() + ". Ready.", "success");
+              }
+            }
+            downloadBtn.disabled = false;
+            copyBtn.disabled = false;
+          } catch (err) {
+            console.error(err);
+            setStatus("Conversion failed: " + (err.message || "unsupported"), "error");
+            downloadBtn.disabled = true;
+            copyBtn.disabled = true;
+          }
+        };
+
+        run();
+      }
+
+      function showImageSource(dataUrl, w, h, file, bytes) {
+        isHtml = false;
+        sourceIsSvg = false;
+        lastDataUrl = dataUrl;
+        lastWidth = w;
+        lastHeight = h;
+        lastHtmlContent = null;
+        lastSvgText = null;
+        lastFileBytes = bytes || null;
+        originalPreview.src = dataUrl;
+        originalPreview.style.display = "block";
+        htmlPreview.style.display = "none";
+        htmlPreview.classList.remove("visible");
+        dropZone.classList.add("has-file");
+        infoRow.innerHTML =
+          '<div class="info-item"><strong>Name:</strong> ' + file.name + "</div>" +
+          '<div class="info-item"><strong>Size:</strong> ' + formatBytes(file.size) + "</div>" +
+          '<div class="info-item"><strong>Dimensions:</strong> ' + w + " × " + h + "</div>" +
+          '<div class="info-item"><strong>Type:</strong> ' + (file.type || "image") + "</div>";
+        updateBadges();
+        doConversion();
+      }
+
+      function showSvgSource(svgText, file) {
+        isHtml = false;
+        sourceIsSvg = true;
+        lastHtmlContent = null;
+        lastSvgText = svgText;
+        lastFileBytes = new TextEncoder().encode(svgText);
+        var dims = parseSvgDimensions(svgText);
+        lastWidth = dims.width;
+        lastHeight = dims.height;
+        lastDataUrl = URL.createObjectURL(new Blob([svgText], { type: "image/svg+xml;charset=utf-8" }));
+        originalPreview.src = lastDataUrl;
+        originalPreview.style.display = "block";
+        htmlPreview.style.display = "none";
+        htmlPreview.classList.remove("visible");
+        dropZone.classList.add("has-file");
+        infoRow.innerHTML =
+          '<div class="info-item"><strong>Name:</strong> ' + file.name + "</div>" +
+          '<div class="info-item"><strong>Size:</strong> ' + formatBytes(file.size) + "</div>" +
+          '<div class="info-item"><strong>Dimensions:</strong> ' + dims.width + " × " + dims.height + "</div>" +
+          '<div class="info-item"><strong>Type:</strong> SVG (vector)</div>';
+        updateBadges();
+        doConversion();
+      }
+
+      function showHtmlSource(html, file) {
+        isHtml = true;
+        sourceIsSvg = false;
+        lastHtmlContent = html;
+        lastDataUrl = null;
+        lastSvgText = null;
+        lastFileBytes = null;
+        originalPreview.style.display = "none";
+        htmlPreview.classList.add("visible");
+        htmlPreview.style.display = "block";
+        htmlPreview.src = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+        dropZone.classList.add("has-file");
+        infoRow.innerHTML =
+          '<div class="info-item"><strong>Name:</strong> ' + file.name + "</div>" +
+          '<div class="info-item"><strong>Size:</strong> ' + formatBytes(file.size) + "</div>" +
+          '<div class="info-item"><strong>Type:</strong> HTML</div>';
+        updateBadges();
+        doConversion();
+      }
+
+      function processFile(file) {
+        if (!file) return;
+        var name = file.name.toLowerCase();
+        currentFile = file;
+        updateFilename(file);
+        setStatus("Reading file…");
+
+        if (name.endsWith(".htm") || name.endsWith(".html") || file.type === "text/html") {
+          var r1 = new FileReader();
+          r1.onload = function (e) { showHtmlSource(e.target.result, file); };
+          r1.onerror = function () { setStatus("Failed to read HTML.", "error"); };
+          r1.readAsText(file);
+          return;
+        }
+
+        if (name.endsWith(".svg") || file.type === "image/svg+xml") {
+          var r2 = new FileReader();
+          r2.onload = function (e) { showSvgSource(e.target.result, file); };
+          r2.onerror = function () { setStatus("Failed to read SVG.", "error"); };
+          r2.readAsText(file);
+          return;
+        }
+
+        
+        if (name.endsWith(".pdf") || file.type === "application/pdf") {
+          setStatus("Loading PDF (page 1)…", "warn");
+          file.arrayBuffer().then(function (buf) {
+            return loadPdfJs().then(function (pdfjsLib) {
+              return pdfjsLib.getDocument({ data: buf }).promise;
+            }).then(function (pdf) {
+              return pdf.getPage(1);
+            }).then(function (page) {
+              var scale = 2;
+              var viewport = page.getViewport({ scale: scale });
+              var canvas = document.createElement("canvas");
+              canvas.width = viewport.width;
+              canvas.height = viewport.height;
+              var ctx = canvas.getContext("2d");
+              return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+                return canvasToBlob(canvas, "image/png");
+              });
+            }).then(function (pngBlob) {
+              return pngBlob.arrayBuffer().then(function (ab) {
+                var bytes = new Uint8Array(ab);
+                var dataUrl = URL.createObjectURL(pngBlob);
+                var img = new Image();
+                img.onload = function () {
+                  showImageSource(dataUrl, img.naturalWidth, img.naturalHeight, file, bytes);
+                  setStatus("PDF page 1 loaded. Choose output format.", "success");
+                };
+                img.src = dataUrl;
+              });
+            });
+          }).catch(function (err) {
+            console.error(err);
+            setStatus("PDF failed: " + (err.message || err) + ". Enable Advanced Engine or try another file.", "error");
+          });
+          return;
+        }
+
+        file.arrayBuffer().then(function (buf) {
+          var bytes = new Uint8Array(buf);
+          var dataUrl = URL.createObjectURL(new Blob([bytes], { type: file.type || "application/octet-stream" }));
+          var img = new Image();
+          img.onload = function () {
+            showImageSource(dataUrl, img.naturalWidth, img.naturalHeight, file, bytes);
+          };
+          img.onerror = function () {
+            if (magickReady) {
+              convertWithMagick(bytes, "Png", 0.92).then(function (pngBytes) {
+                var previewUrl = URL.createObjectURL(new Blob([pngBytes], { type: "image/png" }));
+                var pImg = new Image();
+                pImg.onload = function () {
+                  lastFileBytes = bytes;
+                  showImageSource(previewUrl, pImg.naturalWidth, pImg.naturalHeight, file, bytes);
+                  setStatus("Opened with Advanced engine.", "success");
+                };
+                pImg.onerror = function () {
+                  setStatus("Advanced engine could not decode this file.", "error");
+                };
+                pImg.src = previewUrl;
+              }).catch(function (e) {
+                setStatus("Advanced engine could not decode this file: " + (e.message || e), "error");
+              });
+            } else {
+              setStatus("Browser cannot decode this format. Enable Advanced Engine for broader support.", "warn");
+              lastFileBytes = bytes;
+              currentFile = file;
+              dropZone.classList.add("has-file");
+              infoRow.innerHTML =
+                '<div class="info-item"><strong>Name:</strong> ' + file.name + "</div>" +
+                '<div class="info-item"><strong>Size:</strong> ' + formatBytes(file.size) + "</div>" +
+                '<div class="info-item"><strong>Type:</strong> unknown / unsupported by browser</div>';
+            }
+          };
+          img.src = dataUrl;
+        }).catch(function () {
+          setStatus("Failed to read the file.", "error");
+        });
+      }
+
+      // Events
+      dropZone.addEventListener("click", function () { fileInput.click(); });
+      dropZone.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+      dropZone.addEventListener("dragleave", function () {
+        dropZone.classList.remove("dragover");
+      });
+      dropZone.addEventListener("drop", function (e) {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+      });
+      fileInput.addEventListener("change", function () {
+        if (fileInput.files[0]) processFile(fileInput.files[0]);
+      });
+
+      outputFormat.addEventListener("change", function () {
+        updateQualityVisibility();
+        updateBadges();
+        if (currentFile || lastDataUrl || lastHtmlContent || lastSvgText || lastFileBytes) doConversion();
+      });
+      qualitySlider.addEventListener("input", function () {
+        qualityValue.textContent = Math.round(qualitySlider.value * 100) + "%";
+      });
+      qualitySlider.addEventListener("change", function () {
+        if (currentFile || lastDataUrl || lastHtmlContent || lastSvgText || lastFileBytes) doConversion();
+      });
+      optAddBackground.addEventListener("change", function () {
+        if (currentFile || lastDataUrl || lastHtmlContent || lastSvgText || lastFileBytes) doConversion();
+      });
+      optPreserveName.addEventListener("change", function () {
+        if (currentFile) updateFilename(currentFile);
+      });
+
+      advBtn.addEventListener("click", function () {
+        if (magickReady) return;
+        loadMagick().then(function (ok) {
+          if (ok && (currentFile || lastFileBytes)) {
+            if (currentFile) processFile(currentFile);
+            else doConversion();
+          }
+        });
+      });
+
+      downloadBtn.addEventListener("click", function () {
+        if (!currentResult) return;
+        var blob = typeof currentResult === "string"
+          ? new Blob([currentResult], { type: currentMime + ";charset=utf-8" })
+          : currentResult;
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = currentFileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        setStatus('Downloaded “' + currentFileName + '”', "success");
+      });
+
+      copyBtn.addEventListener("click", function () {
+        if (!currentResult) return;
+        if (typeof currentResult === "string") {
+          navigator.clipboard.writeText(currentResult).then(function () {
+            setStatus("SVG code copied.", "success");
+          }).catch(function () {
+            setStatus("Could not copy.", "error");
+          });
+        } else {
+          var reader = new FileReader();
+          reader.onload = function () {
+            navigator.clipboard.writeText(reader.result).then(function () {
+              setStatus("Data URL copied.", "success");
+            }).catch(function () {
+              setStatus("Could not copy.", "error");
+            });
+          };
+          reader.readAsDataURL(currentResult);
+        }
+      });
+
+      clearBtn.addEventListener("click", function () {
+        currentFile = null;
+        currentResult = null;
+        isHtml = false;
+        sourceIsSvg = false;
+        lastDataUrl = null;
+        lastHtmlContent = null;
+        lastSvgText = null;
+        lastFileBytes = null;
+        lastWidth = 0;
+        lastHeight = 0;
+        fileInput.value = "";
+        dropZone.classList.remove("has-file");
+        originalPreview.src = "";
+        originalPreview.style.display = "none";
+        htmlPreview.src = "";
+        htmlPreview.style.display = "none";
+        htmlPreview.classList.remove("visible");
+        resultBox.classList.add("empty");
+        resultBox.innerHTML = '<div class="placeholder-text">Preview will appear here</div>';
+        infoRow.innerHTML = "";
+        sourceBadge.style.display = "none";
+        targetBadge.style.display = "none";
+        downloadBtn.disabled = true;
+        copyBtn.disabled = true;
+        setStatus("");
+      });
+
+      updateQualityVisibility();
+    })();
+  </script>
+</body>
+</html>
