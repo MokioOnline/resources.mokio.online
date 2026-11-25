@@ -1091,3 +1091,166 @@ input {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ---------- Active nav link ---------- */
+.header-links a.is-active {
+  color: #fff;
+}
+
+/* ---------- Dedicated page hero ---------- */
+.page-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding-top: 120px;
+  padding-bottom: 12px;
+}
+
+.page-hero-content {
+  max-width: 620px;
+}
+
+.page-hero .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 16px;
+  color: #b6a5d9;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.page-hero h1 {
+  margin: 0 0 14px;
+  font-family: var(--display);
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.page-hero-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.55;
+  max-width: 520px;
+}
+
+.page-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.meta-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(20, 22, 32, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.meta-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meta-value {
+  color: #e8e9f0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ---------- Empty state (catalog pages) ---------- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  margin: 36px auto 12px;
+  max-width: 420px;
+  padding: 28px 20px;
+}
+
+.empty-state[hidden] {
+  display: none !important;
+}
+
+.empty-illustration {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 10px;
+}
+
+.empty-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(167, 146, 231, 0.22);
+  border-radius: 50%;
+}
+
+.empty-ring-two {
+  inset: 10px;
+  border-color: rgba(226, 96, 130, 0.25);
+}
+
+.empty-mark {
+  position: relative;
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+  color: #c9c0e8;
+}
+
+.empty-state h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.empty-cta {
+  margin-top: 14px;
+}
+
+/* ---------- Responsive tweaks for page hero ---------- */
+@media (max-width: 800px) {
+  .page-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    padding-top: 100px;
+  }
+
+  .page-hero-meta {
+    width: 100%;
+  }
+
+  .meta-pill {
+    flex: 1;
+    min-width: 0;
+  }
+}

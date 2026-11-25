@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0c10">
+  <meta name="description" content="Free browser tools from Mokio — convert images, documents, remove backgrounds, and more.">
+  <title>Web Features — Mokio Resources</title>
+  <link rel="icon" href="https://www.mokio.online/images/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../script/web-features.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="https://www.mokio.online/" aria-label="Mokio home">
+        <img src="https://www.mokio.online/images/logo.svg" alt="">
+        <span>Mokio</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+      </a>
+      <nav class="header-links" aria-label="Main navigation">
+        <a href="../index.html">Resources</a>
+        <a href="add-ons.html">Add-ons</a>
+        <a href="web-features.html" class="is-active">Web Features</a>
+        <a href="https://app.mokio.online/">Apps</a>
+        <a class="header-cta" href="https://app.mokio.online/">Browse apps <span aria-hidden="true">↗</span></a>
+      </nav>
+      <button class="mobile-menu-btn" type="button" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero section-wrap">
+      <div class="page-hero-content">
+        <p class="eyebrow"><span class="eyebrow-dot"></span> TOOLS MADE BY MOKIO</p>
+        <h1>Web Features</h1>
+        <p class="page-hero-copy">Handy little tools that run right in your browser. Convert files, edit images, and get things done—no installs needed.</p>
+      </div>
+      <div class="page-hero-meta">
+        <div class="meta-pill">
+          <span class="meta-label">Tools</span>
+          <span class="meta-value" id="featureCount">3 available</span>
+        </div>
+        <div class="meta-pill">
+          <span class="meta-label">Runs in</span>
+          <span class="meta-value">Your browser</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="web-features section-wrap" id="catalog">
+      <div class="catalog-controls">
+        <label class="search-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+          <input id="featureSearch" type="search" placeholder="Search tools..." autocomplete="off">
+          <kbd>/</kbd>
+        </label>
+        <div class="filters" role="group" aria-label="Filter tools">
+          <button class="filter-chip is-active" type="button" data-filter="all" aria-pressed="true">All tools</button>
+          <button class="filter-chip" type="button" data-filter="image" aria-pressed="false">Image</button>
+          <button class="filter-chip" type="button" data-filter="file" aria-pressed="false">File</button>
+        </div>
+      </div>
+
+      <!-- Cards are rendered by web-features.js -->
+      <div class="web-feature-grid" id="featureGrid" aria-live="polite"></div>
+
+      <div class="empty-state" id="featureEmptyState" hidden>
+        <div class="empty-illustration" aria-hidden="true">
+          <div class="empty-ring"></div>
+          <div class="empty-ring empty-ring-two"></div>
+          <span class="empty-mark">?</span>
+        </div>
+        <h3>No tools match that search</h3>
+        <p>Try another name or clear the filter to see everything.</p>
+      </div>
+
+      <p class="results-count" id="featureResultsCount" aria-live="polite"></p>
+    </section>
+
+    <section class="bottom-cta section-wrap">
+      <div class="cta-mark" aria-hidden="true">✳</div>
+      <div>
+        <p class="eyebrow">WANT MORE?</p>
+        <h2>Explore the full Mokio world.</h2>
+        <p>Apps, games, and experiences—all in one place.</p>
+      </div>
+      <a class="cta-button" href="https://app.mokio.online/">Explore Mokio Panel <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="footer-brand" href="https://www.mokio.online/">
+      <img src="https://www.mokio.online/images/logo.svg" alt="">
+      <span>Mokio</span>
+    </a>
+    <p>One connected world, built one experience at a time.</p>
+    <span class="copyright">© 2026 Mokio. All rights reserved.</span>
+  </footer>
+</body>
+</html>

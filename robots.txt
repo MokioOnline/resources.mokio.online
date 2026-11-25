@@ -1,0 +1,13 @@
+# robots.txt for resources.mokio.online
+# https://resources.mokio.online
+
+User-agent: *
+Allow: /
+
+# Assets / non-content
+Disallow: /script.js
+Disallow: /*.css$
+Disallow: /*.js$
+
+# Sitemap
+Sitemap: https://resources.mokio.online/sitemap.xml
